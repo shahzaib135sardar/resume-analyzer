@@ -1,54 +1,49 @@
-import axios from 'axios';
-import type { AuthResponse } from './types';
+import axios from "axios"
 
 const api = axios.create({
-  baseURL: '/api',
-  timeout: 60000,
-  headers: {
-    'Content-Type': 'application/json'
-  }
-});
+  baseURL: "/api",
+  timeout: 60000
+})
 
-// Request interceptor
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+  const token = localStorage.getItem("token")
+  if (token) config.headers.Authorization = `Bearer ${token}`
+  return config
+})
 
-// Response interceptor
 api.interceptors.response.use(
-  (response) => response,
+  (res) => res,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      window.location.href = '/login';
+      localStorage.removeItem("token")
+      localStorage.removeItem("user")
+      window.location.href = "/login"
     }
-    return Promise.reject(error);
+    return Promise.reject(error)
   }
-);
+)
 
-export const uploadResume = (file: File, jobDescription?: string) => {
-  const formData = new FormData();
-  formData.append('resume', file);
-  if (jobDescription) {
-    formData.append('jobDescription', jobDescription);
-  }
-  return api.post<{ jobId: string }>('/resumes/upload', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  });
-};
+export async function uploadResume(file: File, jobDescription?: string) {
+  const form = new FormData()
+  form.append("resume", file)
+  if (jobDescription?.trim()) form.append("jobDescription", jobDescription.trim())
+  const { data } = await api.post<{ jobId: string }>("/resumes/upload", form)
+  return data
+}
 
-export const getJobStatus = (jobId: string) => {
-  return api.get(`/resumes/status/${jobId}`);
-};
+export async function getJobStatus(jobId: string) {
+  const { data } = await api.get(`/resumes/status/${jobId}`)
+  return data
+}
 
-export const login = (email: string, password: string) => {
-  return api.post<AuthResponse>('/auth/login', { email, password });
-};
+export async function login(email: string, password: string) {
+  const { data } = await api.post("/auth/login", { email, password })
+  return data
+}
 
-export const register = (email: string, name: string, password: string) => {
-  return api.post<AuthResponse>('/auth/register', { email, name, password });
-};
+export async function register(email: string, name: string, password: string) {
+  const { data } = await api.post("/auth/register", { email, name, password })
+  return data
+}
+
+export default api

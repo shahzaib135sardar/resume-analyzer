@@ -1,11 +1,12 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './hooks/useAuth';
-import UploadPage from './pages/UploadPage';
-import DashboardPage from './pages/DashboardPage';
-import LoginPage from './pages/LoginPage';
-import Layout from './components/Layout';
+import React from "react"
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
+import { AuthProvider } from "./hooks/useAuth"
+import { Layout } from "./components/Layout"
+import UploadPage from "./pages/UploadPage"
+import DashboardPage from "./pages/DashboardPage"
+import LoginPage from "./pages/LoginPage"
 
-const App: React.FC = () => {
+export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
@@ -19,7 +20,5 @@ const App: React.FC = () => {
         </Routes>
       </BrowserRouter>
     </AuthProvider>
-  );
-};
-
-export default App;
+  )
+}
